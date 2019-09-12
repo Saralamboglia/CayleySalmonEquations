@@ -1,3 +1,5 @@
+--This is the file with all code to compute the 120 Steiner representations as in Theorem 4.1 of "A short note on Steiner representations"
+
 
 S=frac(QQ[d1,d2,d3,d4,d5,d6])[X12, X13,X14, X15, X16,X21, X23,X24, X25, X26,X31, X32, X34, X35,X36,X41,Y142356,X42, Y132456,X43,Y123456, X45,X65,X46,X56, X51,Y152346, X52, Y132546, X53, Y123546, X54, X64, X61, Y162345, X62,Y132645, X63, Y123645, Y142536, Y142635, Y152436, Y152634, Y162435,Y162534]
 
@@ -7,10 +9,11 @@ load "AuxiliaryFile.m2"
 
 Cubics= unique Cubics;
 
--- in the following we find the  linear map between P^3 and P^44
+-- in the following we find the  linear map between P^3 and P^44 as in Theorem 4.1
 
 Kernel =sub(Kernel,R);
 ParL=(transpose Kernel)* matrix{{x0},{x1},{x2},{x3}};
+
 --checking that all the entries in the map are different
 apply(subsets(45,2), i->(  if (ParL_(i_0,0))== (ParL_(i_1,0)) or  (ParL_(i_0,0))== -(ParL_(i_1,0)) then print i )  )
 
