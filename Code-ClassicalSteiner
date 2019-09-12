@@ -1,0 +1,3 @@
+--Macaulay2 code to compute the Steiner representations for the octanomial form in the paper "An octanomial model for cubic surfaces"
+
+S=QQ[d1,d2,d3,d4,d5,d6];
