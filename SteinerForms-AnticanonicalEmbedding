@@ -1,1 +1,27 @@
 
+S=frac(QQ[d1,d2,d3,d4,d5,d6])[X12, X13,X14, X15, X16,X21, X23,X24, X25, X26,X31, X32, X34, X35,X36,X41,Y142356,X42, Y132456,X43,Y123456, X45,X65,X46,X56, X51,Y152346, X52, Y132546, X53, Y123546, X54, X64, X61, Y162345, X62,Y132645, X63, Y123645, Y142536, Y142635, Y152436, Y152634, Y162435,Y162534]
+
+R=(frac(QQ[d1,d2,d3,d4,d5,d6])[X12, X13, X14, X15, X16, X21, X23, X24, X25, X26, X31, X32, X34, X35,X36, X41, Y142356, X42, Y132456, X43, Y123456, X45, X65, X46, X56, X51,Y152346, X52, Y132546, X53, Y123546, X54, X64, X61, Y162345, X62,Y132645, X63, Y123645, Y142536, Y142635, Y152436, Y152634, Y162435,Y162534])[x0,x1,x2,x3]
+
+load "AuxiliaryFile.m2"
+
+Cubics= unique Cubics;
+
+-- in the following we find the  linear map between P^3 and P^44
+
+Kernel =sub(Kernel,R);
+ParL=(transpose Kernel)* matrix{{x0},{x1},{x2},{x3}};
+--checking that all the entries in the map are different
+apply(subsets(45,2), i->(  if (ParL_(i_0,0))== (ParL_(i_1,0)) or  (ParL_(i_0,0))== -(ParL_(i_1,0)) then print i )  )
+
+--writing all of them and checking which variables between x0,x1,x2,x3 appear 
+  apply(0..44 , i->( print (gens S)_i ; print toString ParL_(i,0); if (sub(ParL_(i,0),{x0=>0,x1=>0,x2=>0} ) )==0 then print "x0,x1";  if (sub(ParL_(i,0),{x0=>0,x2=>0,x3=>0} ) )==0 then print "x0,x2"; if (sub(ParL_(i,0),{x0=>0,x3=>0,x1=>0} ) )==0 then print "x0,x3"; if (sub(ParL_(i,0),{x1=>0,x2=>0,x3=>0} ) )==0 then print "x1,x2"; print "x1,x3"; if (sub(ParL_(i,0),{x2=>0,x3=>0} ) )==0 then print "x2,x3"; print "*************"))
+
+--this would compute the image of each binomial into P^3
+--this would take too long, better not do it
+f=map(R,S, transpose ParL);
+
+apply(Cubics,i->f(i));
+
+
+
