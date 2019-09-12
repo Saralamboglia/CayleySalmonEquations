@@ -1,3 +1,264 @@
 --Macaulay2 code to compute the Steiner representations for the octanomial form in the paper "An octanomial model for cubic surfaces"
 
 S=QQ[d1,d2,d3,d4,d5,d6];
+
+load "File-with-lines.m2";--remember to include this file in the same folder where the computations are done by M2
+
+
+
+--This function computes the plane containing the three lines in P^3 whose Pluecker coordinates are l1,l2,l3
+
+--input= (l1,l2,l3 )=plucker coordinates of three lines in G(2,4)
+--output= the equations od the plane containing l1,l2,l3
+
+--Note: It needs that  S has been already defined.
+
+planeContainingLines:=method();
+
+planeContainingLines (List, List, List) := (l1,l2,l3)->(
+    print "startlines";
+    R:=(frac S)[p_(0,1,2), p_(0,1,3), p_(0,2,3), p_(1,2,3),p_(0,1), p_(0,2), p_(1,2), p_(0,3), p_(1,3),p_(2,3)];   
+    IncidenceIdeal= ideal(p_(1,2)*p_(0,3)-p_(0,2)*p_(1,3)+p_(0,1)*p_(2,3),   p_(1,2,3)*p_(0,3)-p_(0,2,3)*p_(1,3)+p_(0,1,3)*p_(2,3),p_(1,2,3)*p_(0,2)-p_(0,2,3)*p_(1,2)+p_(0,1,2)*p_(2,3),p_(1,2,3)*p_(0,1)-p_(0,1,3)*p_(1,2)+p_(0,1,2)*p_(1,3),p_(0,2,3)*p_(0,1)-p_(0,1,3)*p_(0,2)+p_(0,1,2)*p_(0,3));
+    I1=sub(IncidenceIdeal ,{p_(0,1)=>l1_0,p_(0,2)=>l1_1,p_(0,3)=>l1_2,p_(1,2)=>l1_3,p_(1,3)=>l1_4,p_(2,3)=>l1_5});
+    I2=sub(IncidenceIdeal ,{p_(0,1)=>l2_0,p_(0,2)=>l2_1,p_(0,3)=>l2_2,p_(1,2)=>l2_3,p_(1,3)=>l2_4,p_(2,3)=>l2_5});
+    I3=sub(IncidenceIdeal ,{p_(0,1)=>l3_0,p_(0,2)=>l3_1,p_(0,3)=>l3_2,p_(1,2)=>l3_3,p_(1,3)=>l3_4,p_(2,3)=>l3_5});
+    Mat:={};--matrix which will be used to create the linear system that recovers the plane
+    G=gens I1; --this is a matrix with one row and each column has  a generator of i
+    n=numColumns gens I1; --these are the number of generators of i
+    M:=map(R^n,R^4,0); --matrix which will be used to record the coefficients of the generators
+    M=mutableMatrix M; --this is to make it vary modify M later
+    apply(0..n-1, j-> (
+		    M_(j,0)=coefficient (p_(0,1,2), G_(0,j) );
+		    M_(j,1)=coefficient (p_(0,1,3), G_(0,j) );
+		    M_(j,2)=coefficient (p_(0,2,3), G_(0,j ));
+		    M_(j,3)=coefficient (p_(1,2,3), G_(0,j) );
+		    		      ));
+     Mat= matrix M;
+    
+     apply({I2,I3}, i->(
+	    G=gens i; --this is a matrix with one row and each column has  a generator of i
+	    n=numColumns gens i; --these are the number of generators of i
+	    M:=map(R^n,R^4,0); --matrix which will be used to record the coefficients of the generators
+	    M=mutableMatrix M; --this is to make it vary modify M later
+	    apply(0..n-1, j-> (
+		    M_(j,0)=coefficient (p_(0,1,2), G_(0,j) );
+		    M_(j,1)=coefficient (p_(0,1,3),G_(0,j) );
+		    M_(j,2)=coefficient (p_(0,2,3),G_(0,j) );
+		    M_(j,3)=coefficient (p_(1,2,3), G_(0,j));
+		    		      ));
+			     
+			      Mat= Mat || matrix M;			      
+	    )
+	);
+    Plane:= transpose generators kernel Mat;
+    R'=(frac S)[x0,x1,x2,x3];
+    Plane=sub(Plane, R');
+    eqPlane=(Plane *transpose matrix{{x0,x1,x2,x3}})_(0,0);
+    return eqPlane
+)
+
+
+--This function computes the Steiner representations of Type I,II,III for the surface defined by the octanomial polynomial.
+--It can be modified to compute Steiner representations of a cubic  surface where the 27 lines are known.
+
+
+--input =type of Steiner representation (1,2 or 3)
+
+computeSteiner:=method();
+
+
+computeSteiner (ZZ) := (typeT)->(
+    kappa:={};
+    num:={};
+    den:={};
+FinalList:={};
+l1:={};
+l2:={};
+l3:={};
+m1:={};
+m2:={};
+m3:={};
+ss=0;
+if typeT==1 then (
+--First loop for Type I Triederpaare
+for I in subsets({1,2,3,4,5,6},3) do ( 
+    i := toString I#0;
+    j := toString I#1;
+    k := toString I#2;
+    linesIndices1 := {concatenate("E", i), concatenate("G", j), concatenate("F", i,j)};
+    linesIndices2 := {concatenate("G", k), concatenate("F", j,k), concatenate("E",j)};
+    linesIndices3 := {concatenate("F", i,k), concatenate("E", k), concatenate("G", i)};
+    l1 = planeContainingLines (Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices1#2)));
+    l2 = planeContainingLines(Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices2#2)));
+    l3 = planeContainingLines(Lines#(ke#(linesIndices3#0)), Lines#(ke#(linesIndices3#1)), Lines#(ke#(linesIndices3#2)));
+    
+    
+    m1 =planeContainingLines ( Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices3#0)));
+    m2 = planeContainingLines (Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices3#1)));
+    m3 = planeContainingLines ( Lines#(ke#(linesIndices1#2)), Lines#(ke#(linesIndices2#2)), Lines#(ke#(linesIndices3#2)));
+    
+ remInd:= set {1,2,3,4,5,6} - I;
+   -- P:={};
+    --if (remInd_0)< (remInd_1) then (
+    --P=allPoints_(ke2#"[G"|remInd_0|", E"|remInd_1|"]"))
+    --else 
+    --(
+   -- P=allPoints_(ke2#"[G"|remInd_1|", E"|remInd_0|"]"));
+   
+   l2=sub(l2,ring l1);
+   l3=sub(l3,ring l1);
+   m1=sub(m1,ring l1);
+   m2=sub(m2,ring l1);
+   m3=sub(m3,ring l3);
+   x0=sub(x0,ring l1);
+   x1=sub(x1,ring l1);
+   x2=sub(x2,ring l1);
+   x3=sub(x3,ring l1);
+   num=sub(l1*l2*l3,{x0=>1,x1=>1,x2=>1,x3=>1} );
+   den=sub(m1*m2*m3,{x0=>1,x1=>1,x2=>1,x3=>1} );
+   print "sub done";
+   kappa=num/den;
+   kappa=sub(kappa, ring l1);
+   print "kappa done";
+   FinalList=append(FinalList,{{l1,l2,l3},{m1,m2,m3},{kappa}});
+   print ss;
+   ss=ss+1
+   -- 
+
+    );
+return FinalList
+)
+else
+( if typeT==2 then ( 
+for I in subsets({1,2,3,4,5,6},4) do ( print ss;
+for J1 in subsets(I,2) do (
+    J2 := I - set J1;
+    J3 := {1,2,3,4,5,6} - set I;     
+    i := toString J1#0;
+    j := toString J1#1;
+    k := toString J2#0;
+    l := toString J2#1;
+    m := toString J3#0;
+    n := toString J3#1;
+    ordij:=sort{i,j};
+    ordkl:=sort{k,l};
+    ordik:=sort{i,k};
+    ordjl:=sort{j,l};
+    ordmn:=sort{m,n};
+    linesIndices1 := {concatenate("E", i), concatenate("G", j), concatenate("F", ordij_0,ordij_1)};
+    linesIndices2 := {concatenate("G", k), concatenate("E", l), concatenate("F",ordkl_0,ordkl_1)};
+    linesIndices3 := {concatenate("F", ordik_0,ordik_1), concatenate("F", ordjl_0,ordjl_1), concatenate("F", ordmn_0,ordmn_1)};
+    print linesIndices1;
+    print linesIndices2;
+    print linesIndices3;
+  l1 = planeContainingLines (Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices1#2)));
+    l2 = planeContainingLines(Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices2#2)));
+    l3 = planeContainingLines(Lines#(ke#(linesIndices3#0)), Lines#(ke#(linesIndices3#1)), Lines#(ke#(linesIndices3#2)));
+    
+    
+    m1 =planeContainingLines ( Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices3#0)));
+    m2 = planeContainingLines (Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices3#1)));
+    m3 = planeContainingLines ( Lines#(ke#(linesIndices1#2)), Lines#(ke#(linesIndices2#2)), Lines#(ke#(linesIndices3#2)));
+    
+    l2=sub(l2,ring l1);
+   l3=sub(l3,ring l1);
+   m1=sub(m1,ring l1);
+   m2=sub(m2,ring l1);
+   m3=sub(m3,ring l3);
+   x0=sub(x0,ring l1);
+   x1=sub(x1,ring l1);
+   x2=sub(x2,ring l1);
+   x3=sub(x3,ring l1);
+   num=sub(l1*l2*l3,{x0=>1,x1=>1,x2=>1,x3=>1} );
+   den=sub(m1*m2*m3,{x0=>1,x1=>1,x2=>1,x3=>1} );
+   print "sub done";
+   kappa=num/den;
+   kappa=sub(kappa, ring l1);
+   print "kappa done";
+  FinalList=append(FinalList,{{l1,l2,l3},{m1,m2,m3},{kappa}});
+   print ss;
+   ss=ss+1
+    );
+);
+return FinalList    
+    )
+
+else 
+
+(
+    for I in subsets({2,3,4,5,6},3) do ( 
+    J := {2,3,4,5,6} - set I;     
+    i := toString 1;
+    j := toString I#0;
+    k := toString I#1;
+    l := toString I#2;
+    m := toString J#0;
+    n := toString J#1;
+     ordij:=sort{i,j};
+    ordlm:=sort{l,m};
+    ordkn:=sort{n,k};
+    ordln:=sort{n,l};
+    ordik:=sort{i,k};
+    ordjm:=sort{j,m};
+        ordmk:=sort{m,k};
+    ordil:=sort{i,l};
+    ordjn:=sort{j,n};
+  
+    linesIndices1 := {concatenate("F", ordij_0,ordij_1), concatenate("F", ordlm_0,ordlm_1), concatenate("F", ordkn_0,ordkn_1)};
+    linesIndices2 := {concatenate("F", ordln_0,ordln_1), concatenate("F", ordik_0,ordik_1), concatenate("F", ordjm_0,ordjm_1)};
+    linesIndices3 := {concatenate("F", ordmk_0,ordmk_1), concatenate("F", ordjn_0,ordjn_1), concatenate("F", ordil_0,ordil_1)};
+  
+      print linesIndices1;
+    print linesIndices2;
+    print linesIndices3;
+    
+    
+    l1 = planeContainingLines (Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices1#2)));
+    l2 = planeContainingLines(Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices2#2)));
+    l3 = planeContainingLines(Lines#(ke#(linesIndices3#0)), Lines#(ke#(linesIndices3#1)), Lines#(ke#(linesIndices3#2)));
+    
+    
+    m1 =planeContainingLines ( Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices3#0)));
+    m2 = planeContainingLines (Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices3#1)));
+    m3 = planeContainingLines ( Lines#(ke#(linesIndices1#2)), Lines#(ke#(linesIndices2#2)), Lines#(ke#(linesIndices3#2)));
+    l2=sub(l2,ring l1);
+   l3=sub(l3,ring l1);
+   m1=sub(m1,ring l1);
+   m2=sub(m2,ring l1);
+   m3=sub(m3,ring l3);
+   x0=sub(x0,ring l1);
+   x1=sub(x1,ring l1);
+   x2=sub(x2,ring l1);
+   x3=sub(x3,ring l1);
+   num=sub(l1*l2*l3,{x0=>1,x1=>1,x2=>1,x3=>1} );
+   den=sub(m1*m2*m3,{x0=>1,x1=>1,x2=>1,x3=>1} );
+   print "sub done";
+   kappa=num/den;
+   kappa=sub(kappa, ring l1);
+   print "kappa done";
+   FinalList=append(FinalList,{{l1,l2,l3},{m1,m2,m3},{kappa}});
+   print ss;
+   ss=ss+1;
+   
+    
+
+    );
+
+    );
+  return FinalList
+    )
+)    
+
+
+
+TypeI=flatten flatten TypeI;
+TypeII=flatten flatten TypeII;
+TypeIII=flatten flatten TypeIII;
+
+--This functions check that the point (1,1,1,1) is not contained in any of the tritangent planes.
+
+
+f=0;apply(TypeI,i->(f=sub(i,{sub(x0,ring i)=>1,sub(x1,ring i)=>1,sub(x2,ring i)=>1,sub(x3,ring i)=>1});if f==0 then print "0"  ))
+f=0;apply(TypeIII,i->(f=sub(i,{sub(x0,ring i)=>1,sub(x1,ring i)=>1,sub(x2,ring i)=>1,sub(x3,ring i)=>1});if f==0 then print "0"  ))
+f=0;apply(TypeIII,i->(f=sub(i,{sub(x0,ring i)=>1,sub(x1,ring i)=>1,sub(x2,ring i)=>1,sub(x3,ring i)=>1});if f==0 then print "0"  ))
+
