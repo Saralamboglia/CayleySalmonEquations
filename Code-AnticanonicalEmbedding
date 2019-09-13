@@ -30,7 +30,7 @@ polyP3=f(Cubics_1);
 
 NewL:={};
 lis:={};
-apply(L,i->
+apply(SpecialTrinomials,i->
     (lis={};apply(i,j->(
 		lis=append(lis, {f(sub(j_0, S)),f(sub(j_1,S)),f(sub(j_2,S))} );
 			));NewL=append(NewL,lis);
