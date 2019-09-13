@@ -9,7 +9,7 @@ load "File-with-lines.m2";--remember to include this file in the same folder whe
 --This function computes the plane containing the three lines in P^3 whose Pluecker coordinates are l1,l2,l3
 
 --input= (l1,l2,l3 )=plucker coordinates of three lines in G(2,4)
---output= the equations od the plane containing l1,l2,l3
+--output= the equations of the plane containing l1,l2,l3
 
 --Note: It needs that  S has been already defined.
 
@@ -63,7 +63,7 @@ planeContainingLines (List, List, List) := (l1,l2,l3)->(
 
 
 --input =type of Steiner representation (1,2 or 3)
-
+--output= list with {{l1,l2,l3},{m1,m2,m3},{kappa}} where the  Steiner representation is l1*l2*l3-kappa*m1*m2*m3
 computeSteiner:=method();
 
 
