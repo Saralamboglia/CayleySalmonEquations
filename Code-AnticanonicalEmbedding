@@ -17,14 +17,28 @@ ParL=(transpose Kernel)* matrix{{x0},{x1},{x2},{x3}};
 --checking that all the entries in the map are different
 apply(subsets(45,2), i->(  if (ParL_(i_0,0))== (ParL_(i_1,0)) or  (ParL_(i_0,0))== -(ParL_(i_1,0)) then print i )  )
 
---writing all of them and checking which variables between x0,x1,x2,x3 appear 
-  apply(0..44 , i->( print (gens S)_i ; print toString ParL_(i,0); if (sub(ParL_(i,0),{x0=>0,x1=>0,x2=>0} ) )==0 then print "x0,x1";  if (sub(ParL_(i,0),{x0=>0,x2=>0,x3=>0} ) )==0 then print "x0,x2"; if (sub(ParL_(i,0),{x0=>0,x3=>0,x1=>0} ) )==0 then print "x0,x3"; if (sub(ParL_(i,0),{x1=>0,x2=>0,x3=>0} ) )==0 then print "x1,x2"; print "x1,x3"; if (sub(ParL_(i,0),{x2=>0,x3=>0} ) )==0 then print "x2,x3"; print "*************"))
+--this is the map A^*_X
 
---this would compute the image of each binomial into P^3
---this would take too long, better not do it
 f=map(R,S, transpose ParL);
 
-apply(Cubics,i->f(i));
+--This computes the polynomial  defining the surface in P^3, i.e. A_X^{-1}(V(I)) in Thoreme 4.1.
+
+polyP3=f(Cubics_1);
+
+
+--The following is to compute the 120 Steiner representations
+
+NewL:={};
+lis:={};
+apply(L,i->
+    (lis={};apply(i,j->(
+		lis=append(lis, {f(sub(j_0, S)),f(sub(j_1,S)),f(sub(j_2,S))} );
+			));NewL=append(NewL,lis);
+	) );
+NewL
+
+
+
 
 
 
