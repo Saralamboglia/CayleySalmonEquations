@@ -16,19 +16,17 @@ Cubics= unique Cubics;
 Kernel =sub(Kernel,R);
 ParL=(transpose Kernel)* matrix{{x0},{x1},{x2},{x3}};
 
---checking that all the entries in the map are different
-apply(subsets(45,2), i->(  if (ParL_(i_0,0))== (ParL_(i_1,0)) or  (ParL_(i_0,0))== -(ParL_(i_1,0)) then print i )  )
 
---this is the map A^*_X
+--this is the map \phi^*
 
 f=map(R,S, transpose ParL);
 
---This computes the polynomial  defining the surface in P^3, i.e. A_X^{-1}(V(I)) in Thoreme 4.1.
+--This computes the polynomial  defining the surface in P^3, i.e. \phi^{-1}(V(I)) in Thoreme 4.1.
 
 polyP3=f(Cubics_1);
 
 
---The following is to compute the 120 Steiner representations
+--The following is to compute the 120 Cayley-Salmon equations
 
 NewL:={};
 lis:={};
