@@ -58,16 +58,16 @@ planeContainingLines (List, List, List) := (l1,l2,l3)->(
 )
 
 
---This function computes the Steiner representations of Type I,II,III for the surface defined by the octanomial polynomial.
---It can be modified to compute Steiner representations of a cubic  surface where the 27 lines are known.
+--This function computes the Cayley-Salmon equations of Type I,II,III for the surface defined by the octanomial polynomial.
+--It can be modified to compute Cayley-Salmon equations of a cubic  surface where the 27 lines are known.
 
 
 --input =type of Steiner representation (1,2 or 3)
 --output= list with {{l1,l2,l3},{m1,m2,m3},{kappa}} where the  Steiner representation is l1*l2*l3-kappa*m1*m2*m3
-computeSteiner:=method();
+computeCSequations:=method();
 
 
-computeSteiner (ZZ) := (typeT)->(
+computeCSequations (ZZ) := (typeT)->(
     kappa:={};
     num:={};
     den:={};
@@ -98,13 +98,7 @@ for I in subsets({1,2,3,4,5,6},3) do (
     m3 = planeContainingLines ( Lines#(ke#(linesIndices1#2)), Lines#(ke#(linesIndices2#2)), Lines#(ke#(linesIndices3#2)));
     
  remInd:= set {1,2,3,4,5,6} - I;
-   -- P:={};
-    --if (remInd_0)< (remInd_1) then (
-    --P=allPoints_(ke2#"[G"|remInd_0|", E"|remInd_1|"]"))
-    --else 
-    --(
-   -- P=allPoints_(ke2#"[G"|remInd_1|", E"|remInd_0|"]"));
-   
+  
    l2=sub(l2,ring l1);
    l3=sub(l3,ring l1);
    m1=sub(m1,ring l1);
@@ -148,9 +142,7 @@ for J1 in subsets(I,2) do (
     linesIndices1 := {concatenate("E", i), concatenate("G", j), concatenate("F", ordij_0,ordij_1)};
     linesIndices2 := {concatenate("G", k), concatenate("E", l), concatenate("F",ordkl_0,ordkl_1)};
     linesIndices3 := {concatenate("F", ordik_0,ordik_1), concatenate("F", ordjl_0,ordjl_1), concatenate("F", ordmn_0,ordmn_1)};
-    print linesIndices1;
-    print linesIndices2;
-    print linesIndices3;
+   
   l1 = planeContainingLines (Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices1#2)));
     l2 = planeContainingLines(Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices2#2)));
     l3 = planeContainingLines(Lines#(ke#(linesIndices3#0)), Lines#(ke#(linesIndices3#1)), Lines#(ke#(linesIndices3#2)));
@@ -208,10 +200,7 @@ else
     linesIndices2 := {concatenate("F", ordln_0,ordln_1), concatenate("F", ordik_0,ordik_1), concatenate("F", ordjm_0,ordjm_1)};
     linesIndices3 := {concatenate("F", ordmk_0,ordmk_1), concatenate("F", ordjn_0,ordjn_1), concatenate("F", ordil_0,ordil_1)};
   
-      print linesIndices1;
-    print linesIndices2;
-    print linesIndices3;
-    
+   
     
     l1 = planeContainingLines (Lines#(ke#(linesIndices1#0)), Lines#(ke#(linesIndices1#1)), Lines#(ke#(linesIndices1#2)));
     l2 = planeContainingLines(Lines#(ke#(linesIndices2#0)), Lines#(ke#(linesIndices2#1)), Lines#(ke#(linesIndices2#2)));
