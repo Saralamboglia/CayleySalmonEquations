@@ -1,0 +1,406 @@
+Clebsch-Tritangent-CS
+system:sage
+
+
+{{{id=3|
+
+///
+}}}
+
+<p>Run code again if the output contains a line with a zero. Output is tritangent planes.</p>
+
+{{{id=1|
+#choose a random point in the line defined by P1, P2
+def RandomPoint(P1, P2):
+    rnumber = ZZ.random_element(0,10) - 5
+    return [P1[i] + rnumber*P2[i] for i in range(4)];
+    
+def SQRTconjugate(n,d):
+    return (n-2*n.coefficient(sqrt(d))*sqrt(d))
+    
+def RotateAndPlane(P1,P2,P3):
+    return Matrix([[x,y,z,w],P1,P2,P3]).det();
+
+var('x y z w')
+tritangentplanes = {}
+
+Q1 =  -2
+Q2 = -sqrt(5) - 3
+Q3 = -sqrt(5) + 1
+Q4 =  2*sqrt(5)
+
+R1 = 1 + sqrt(5)
+R2 = 2
+R3 = -2
+R4 = -(1 + sqrt(5))
+
+Lines = {
+    'E1' : RandomPoint([1,-1,0,0],[0,0,1,-1]),
+    'E2' : RandomPoint([1,0,-1,0],[0,0,0,1]),
+    'E3' : RandomPoint([4,Q1,Q3,Q4],[0,R1,R3,R4]),
+    'E4' : RandomPoint([4,Q2,Q3,Q1],[0,R2,R3,R1]),
+    'E5' : RandomPoint([4,Q2,Q1,Q4],[0,R2,R1,R4]),
+    'E6' : RandomPoint([1,0,0,0],[0,1,0,-1]),
+    
+    'F12' : RandomPoint([4,Q3,Q1,Q2],[0,R3,R1,R2]),
+    'F13' : RandomPoint([1,0,0,-1],[0,1,-1,0]),
+    'F14' : RandomPoint([1,-1,0,0],[0,0,1,0]),
+    'F15' : RandomPoint([0,1,0,0],[0,0,1,-1]),
+    'F16' : RandomPoint([4,Q1,Q4,Q2],[0,R1,R4,R2]),
+    
+    'F23' : RandomPoint([1,0,-1,0],[0,1,0,0]),
+    'F24' : RandomPoint([0,1,-1,0],[0,0,0,1]),
+    'F25' : RandomPoint([1,0,0,-1],[0,0,1,0]),
+    'F26' : RandomPoint([4,Q1,Q2,Q3],[0,R1,R2,R3]),
+    
+    'F34' : RandomPoint([4,Q1,Q3,Q2],[0,R1,R3,R2]),
+    'F35' : RandomPoint([4,Q1,Q4,Q3],[0,R1,R4,R3]),
+    'F36' : RandomPoint([0,1,0,-1],[0,0,1,0]),
+    
+    'F45' : RandomPoint([4,Q2,Q1,Q3],[0,R2,R1,R3]),
+    'F46' : RandomPoint([1,0,0,-1],[0,1,0,0]),
+    
+    'F56' : RandomPoint([1,0,0,0],[0,1,-1,0]),
+    
+    'G1' : RandomPoint([4,Q2,Q4,Q1],[0,R2,R4,R1]),
+    'G2' : RandomPoint([4,Q2,Q3,Q4],[0,R2,R3,R4]),
+    'G3' : RandomPoint([1,0,-1,0],[0,1,0,-1]),
+    'G4' : RandomPoint([1,-1,0,0],[0,0,0,1]),
+    'G5' : RandomPoint([1,0,0,0],[0,0,1,-1]),
+    'G6' : RandomPoint([4,Q1,Q2,Q4],[0,R1,R2,R4])
+}
+
+#First loop for Type I planes
+for I in Arrangements([1,2,3,4,5,6],2):
+    i = I[0];
+    j = I[1];
+    io = str(min(i,j));
+    jo = str(max(i,j));
+    i = str(i)
+    j = str(j)
+    A = [Lines["E" + i], Lines["G" + j], Lines["F" + io +jo]]
+    
+    fA = RotateAndPlane(A[0],A[1],A[2])
+    
+    if fA.coefficient(w) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(w), 5)).simplify_full()
+        fA = fA/fA.coefficient(w) 
+        
+    if fA.coefficient(z) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(z), 5)).simplify_full()
+        fA = fA/fA.coefficient(z) 
+    
+    if fA.coefficient(y) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(y), 5)).simplify_full()
+        fA = fA/fA.coefficient(y)   
+        
+    if fA.coefficient(x) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(x), 5)).simplify_full()
+        fA = fA/fA.coefficient(x)
+        
+    tritangentplanes["E" + i + "G" + j + "F" + io +jo] = fA
+          
+    print fA
+    
+    
+#First loop for Type II planes
+for I in SetPartitions(6, [2,2,2]):
+    i = str(list(I[0])[0])
+    j = str(list(I[0])[1])
+    k = str(list(I[1])[0])
+    l = str(list(I[1])[1])
+    m = str(list(I[2])[0])
+    n = str(list(I[2])[1])
+    A = [Lines["F" + i + j], Lines["F" + k + l], Lines["F" + m + n]]
+    
+    fA = RotateAndPlane(A[0],A[1],A[2])
+    
+    if fA.coefficient(w) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(w), 5)).simplify_full()
+        fA = fA/fA.coefficient(w) 
+        
+    if fA.coefficient(z) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(z), 5)).simplify_full()
+        fA = fA/fA.coefficient(z) 
+    
+    if fA.coefficient(y) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(y), 5)).simplify_full()
+        fA = fA/fA.coefficient(y)   
+        
+    if fA.coefficient(x) != 0:
+        fA = (fA * SQRTconjugate(fA.coefficient(x), 5)).simplify_full()
+        fA = fA/fA.coefficient(x)
+        
+    tritangentplanes[frozenset(["F" + i + j, "F" + k + l, "F" + m + n])] = fA
+          
+    print fA
+    
+    
+    
+///
+-1/2*w*(sqrt(5) - 3) - 1/2*z*(sqrt(5) - 3) + x + y
+w + x + y + z
+x + y
+w + z
+1/2*w*(sqrt(5) + 3) + 1/2*z*(sqrt(5) + 3) + x + y
+1/2*y*(sqrt(5) + 1) + x + z
+x + z
+x + y + z
+y
+-1/2*y*(sqrt(5) - 1) + x + z
+1/2*y*(sqrt(5) + 3) + 1/2*z*(sqrt(5) + 3) + w + x
+-1/2*w*(sqrt(5) - 1) + x + z
+1/2*z*(sqrt(5) + 1) + x + y
+1/2*w*(sqrt(5) - 1) + 1/2*z*(sqrt(5) - 1) + y
+-1/2*w*(sqrt(5) + 1) - 1/2*y*(sqrt(5) + 1) + x
+-1/2*w*(sqrt(5) - 1) + x + y
+1/2*y*(sqrt(5) - 1) + 1/2*z*(sqrt(5) - 1) + x
+-1/2*w*(sqrt(5) - 3) - 1/2*y*(sqrt(5) - 3) + x + z
+-1/2*w*(sqrt(5) + 1) - 1/2*z*(sqrt(5) + 1) + y
+1/2*z*(sqrt(5) + 1) + w + x
+-1/2*w*(sqrt(5) + 1) - 1/2*z*(sqrt(5) + 1) + x
+1/2*y*(sqrt(5) + 1) + w + x
+1/2*w*(sqrt(5) + 3) + 1/2*y*(sqrt(5) + 3) + x + z
+-1/2*z*(sqrt(5) - 1) + x + y
+1/2*w*(sqrt(5) + 1) + y + z
+1/2*z*(sqrt(5) + 1) + w + y
+-1/2*z*(sqrt(5) - 1) + w + y
+w + y
+z
+w + y + z
+-1/2*w*(sqrt(5) - 1) + y + z
+1/2*w*(sqrt(5) + 1) + x + z
+w + x + z
+w
+y + z
+w + x
+w + x + y
+x
+-1/2*y*(sqrt(5) + 1) - 1/2*z*(sqrt(5) + 1) + x
+-1/2*y*(sqrt(5) - 1) + w + x
+1/2*w*(sqrt(5) - 1) + 1/2*z*(sqrt(5) - 1) + x
+1/2*w*(sqrt(5) + 1) + x + y
+-1/2*y*(sqrt(5) - 3) - 1/2*z*(sqrt(5) - 3) + w + x
+1/2*w*(sqrt(5) - 1) + 1/2*y*(sqrt(5) - 1) + x
+-1/2*z*(sqrt(5) - 1) + w + x
+}}}
+
+<p>CS equations</p>
+
+{{{id=2|
+def jin(i,j):
+    return ''.join(map(str,list(set([int(i),int(j)]))))
+
+var('K, eta')
+
+eta = 1
+CSeqs = []
+
+F = x^3 + y^3 + z^3 + w^3 - (x+y+z+w)^3
+
+#First loop for Type I Triederpaare
+for I in Subsets([1,2,3,4,5,6],3):
+    i = str(I[0])
+    j = str(I[1])
+    k = str(I[2])
+    l1 = tritangentplanes["E" + i + "G" + j + "F" + i + j]
+    l2 = tritangentplanes["E" + j + "G" + k + "F" + j + k]
+    l3 = tritangentplanes["E" + k + "G" + i + "F" + i + k]
+    m1 = tritangentplanes["E" + i + "G" + k + "F" + i + k]
+    m2 = tritangentplanes["E" + k + "G" + j + "F" + j + k]
+    m3 = tritangentplanes["E" + j + "G" + i + "F" + i + j]
+    
+    print eta, " :    ", l1*l2*l3 - K * m1*m2*m3
+    eta = eta+1
+    
+#Second loop for type II Triederpaare
+for I in Subsets([1,2,3,4,5,6],4): 
+    for J1 in Subsets(I,2):
+        J2 = list(set(I) - set(J1))
+        J3 = list(set([1,2,3,4,5,6]) - set(I))     
+        i = str(J1[0])
+        j = str(J1[1])
+        k = str(min(J2[0],J2[1]))
+        l = str(max(J2[0],J2[1]))
+        m = str(min(J3[0],J3[1]))
+        n = str(max(J3[0],J3[1]))
+                        
+        l1 = tritangentplanes["E" + i + "G" + j + "F" + i + j]
+        l2 = tritangentplanes["E" + l + "G" + k + "F" + k + l]
+        l3 = tritangentplanes[frozenset(["F" + jin(i, k), "F" + jin(j, l), "F" + jin(m, n)])]
+        m1 = tritangentplanes["E" + i + "G" + k + "F" + jin(i, k)]
+        m2 = tritangentplanes["E" + l + "G" + j + "F" + jin(j, l)]
+        l3 = tritangentplanes[frozenset(["F" + jin(i, j), "F" + jin(k, l), "F" + jin(m, n)])]
+        
+        print eta, " :    ", l1*l2*l3 - K * m1*m2*m3
+        eta = eta+1
+
+#Third loop for type III Triederpaare    
+for I in Subsets([2,3,4,5,6],3): 
+    J = list(set([2,3,4,5,6]) - set(I))     
+    i = str(1)
+    j = str(I[0])
+    k = str(I[1])
+    l = str(I[2])
+    m = str(J[0])
+    n = str(J[1])
+    
+    l1 = tritangentplanes[frozenset(["F" + jin(i, j), "F" + jin(l, m), "F" + jin(k, n)])]
+    l2 = tritangentplanes[frozenset(["F" + jin(l, n), "F" + jin(i, k), "F" + jin(j, m)])]
+    l3 = tritangentplanes[frozenset(["F" + jin(k, m), "F" + jin(j, n), "F" + jin(i, l)])]
+    m1 = tritangentplanes[frozenset(["F" + jin(i, j), "F" + jin(l, n), "F" + jin(k, m)])]
+    m2 = tritangentplanes[frozenset(["F" + jin(l, m), "F" + jin(i, k), "F" + jin(j, n)])]
+    m3 = tritangentplanes[frozenset(["F" + jin(k, n), "F" + jin(j, m), "F" + jin(i, l)])]
+    
+    print eta, " :    ", l1*l2*l3 - K * m1*m2*m3
+    eta = eta+1
+///
+WARNING: Output truncated!  
+<html><a target='_new' href='/home/admin/18/cells/2/full_output.txt' class='file_link'>full_output.txt</a></html>
+
+
+
+1  :     1/4*(y*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*z)*K*(w + x + y + z) - 1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*(x + z)
+2  :     -1/4*(y*(sqrt(5) + 1) + 2*x + 2*z)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*K*(x + y) + 1/4*(w*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*(x + y + z)
+3  :     -1/4*(y*(sqrt(5) + 1) + 2*w + 2*x)*(y*(sqrt(5) + 1) + 2*x + 2*z)*K*(w + z) + 1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*y
+4  :     1/8*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*w - 2*y)*K + 1/8*(z*(sqrt(5) + 1) + 2*w + 2*y)*(y*(sqrt(5) - 1) - 2*x - 2*z)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)
+5  :     1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*K*(x + y) - 1/4*(z*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) - 2*x - 2*y)*(w + x + y + z)
+6  :     -1/4*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*K*(w + z) - 1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(w + x + y + z)
+7  :     -1/4*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*K*(w + y) - 1/4*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*y)*(w + x + y + z)
+8  :     -1/4*(w*(sqrt(5) - 1) - 2*x - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + z) + 1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(x + y)
+9  :     1/4*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(w*(sqrt(5) - 1) - 2*x - 2*y)*K*z + 1/4*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*y)*(x + y)
+10  :     1/4*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*K*(w + y + z) + 1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) + 1) + 2*w + 2*y)*(w + z)
+11  :     -1/4*(w*(sqrt(5) - 1) - 2*x - 2*z)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*K*(x + y + z) + 1/4*(z*(sqrt(5) + 1) + 2*x + 2*y)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(x + z)
+12  :     1/4*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*z)*K*y + 1/4*(y*(sqrt(5) + 1) + 2*w + 2*x)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(x + z)
+13  :     -1/4*(w*(sqrt(5) - 1) - 2*x - 2*z)*(y*(sqrt(5) - 1) - 2*x - 2*z)*K*(w + y) + 1/4*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*y)*(x + z)
+14  :     1/4*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*y - 1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(y*(sqrt(5) + 1) + 2*w + 2*x)*(x + y + z)
+15  :     1/4*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(y*(sqrt(5) - 1) - 2*x - 2*z)*K*z - 1/4*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*y)*(x + y + z)
+16  :     1/4*(y*(sqrt(5) + 1) + 2*w + 2*x)*(y*(sqrt(5) - 1) - 2*x - 2*z)*K*(w + y + z) - 1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*w - 2*y)*y
+17  :     -1/8*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*K - 1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(z*(sqrt(5) + 1) + 2*x + 2*y)
+18  :     -1/4*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*K*z + 1/4*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) + 1) + 2*x + 2*y)*(w + y)
+19  :     1/4*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*K*(w + y + z) + 1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(w + y)
+20  :     1/4*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z) - 1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(w*(sqrt(5) + 1) + 2*y + 2*z)*z
+21  :     1/4*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z) - 1/8*(w*(sqrt(5) - 1) - 2*y - 2*z)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)
+22  :     1/8*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K + 1/2*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(w + x + y + z)*(y + z)
+23  :     -1/8*(z*(sqrt(5) + 1) + 2*x + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K - 1/2*(w*(sqrt(5) - 1) - 2*x - 2*z)*w*(x + y)
+24  :     -1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*K - 1/2*(w*(sqrt(5) - 1) - 2*x - 2*y)*w*(x + z)
+25  :     1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*x + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/2*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(x + y + z)*(y + z)
+26  :     1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + y + z) - 1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) - 2*y - 2*z)
+27  :     1/4*(y*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z) + 1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*w - 2*x)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)
+28  :     -1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K + 1/2*(y*(sqrt(5) + 1) + 2*w + 2*x)*(w + x + y + z)*(w + x)
+29  :     -1/8*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K - 1/2*(w*(sqrt(5) - 1) - 2*x - 2*z)*(w + x + z)*(w + z)
+30  :     1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/2*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w + x + z)*(x + z)
+31  :     1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/2*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(w + x)*y
+32  :     1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*y - 1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(z*(sqrt(5) - 1) - 2*w - 2*x)
+33  :     -1/4*(z*(sqrt(5) - 1) - 2*w - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z) - 1/4*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*(w + y)
+34  :     -1/4*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K*(w + y) + 1/4*(z*(sqrt(5) - 1) - 2*w - 2*y)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)*(w + x + y + z)
+35  :     1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K - 1/8*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(w*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*z)
+36  :     1/4*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y) + 1/4*(w*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*w + 2*y)*(x + z)
+37  :     -1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/8*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(y*(sqrt(5) - 1) - 2*x - 2*z)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)
+38  :     -1/8*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(y*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)
+39  :     1/4*(y*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + y) + 1/8*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)
+40  :     1/8*(z*(sqrt(5) - 1) - 2*x - 2*y)^2*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K + 1/2*(y*(sqrt(5) + 1) + 2*w + 2*x)*(w + x + y)*(x + y)
+41  :     1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K + 1/2*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(w + z)*x
+42  :     -1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)^2*K - 1/2*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(x + y + z)*x
+43  :     -1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/2*(w*(sqrt(5) - 1) - 2*x - 2*y)*(w + x + y)*y
+44  :     -1/4*(w*(sqrt(5) - 1) - 2*x - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*y - 1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)
+45  :     -1/4*(z*(sqrt(5) - 1) - 2*w - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + y) + 1/4*(z*(sqrt(5) - 1) - 2*w - 2*x)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*z
+46  :     -1/4*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K*z - 1/4*(w*(sqrt(5) + 1) + 2*x + 2*y)*(z*(sqrt(5) - 1) - 2*w - 2*y)*(x + y)
+47  :     -1/8*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K - 1/8*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)
+48  :     1/4*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*z - 1/4*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*y)*(x + y + z)
+49  :     1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/8*(w*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) - 2*x - 2*y)*(y*(sqrt(5) - 1) - 2*x - 2*z)
+50  :     1/8*(w*(sqrt(5) - 1) - 2*x - 2*y)*(y*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/8*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*x)
+51  :     -1/4*(z*(sqrt(5) - 1) - 2*w - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + z) + 1/4*(w*(sqrt(5) - 1) - 2*y - 2*z)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*(w + y + z)
+52  :     -1/4*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K*(w + y + z) - 1/4*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*y)*(w + z)
+53  :     -1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*x - 2*y)*K - 1/8*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(y*(sqrt(5) + 1) + 2*w + 2*x)*(y*(sqrt(5) - 1) - 2*w - 2*x)
+54  :     1/4*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z) - 1/4*(z*(sqrt(5) + 1) + 2*w + 2*y)*(y*(sqrt(5) - 1) - 2*w - 2*x)*y
+55  :     1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(y*(sqrt(5) - 1) - 2*x - 2*z)
+56  :     1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(y*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) - 2*y - 2*z)
+57  :     1/4*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + y) + 1/4*(z*(sqrt(5) - 1) - 2*x - 2*y)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)*(w + x + y + z)
+58  :     -1/4*(z*(sqrt(5) - 1) - 2*x - 2*y)^2*K*(w + x + y + z) + 1/4*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(w*(sqrt(5) + 1) + 2*x + 2*y)*(x + y)
+59  :     -1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z) - 1/4*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*(w + z)
+
+...
+
+61  :     -1/8*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/8*(w*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(w*(sqrt(5) - 1) - 2*x - 2*y)
+62  :     -1/8*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(w*(sqrt(5) - 1) - 2*x - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/8*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)
+63  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y)*(x + y) + (w + x + y + z)*(w + x)*z
+64  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z)*z + (w + x + y)*(w + y)*(x + y)
+65  :     1/4*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z) + 1/8*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(y*(sqrt(5) - 1) - 2*w - 2*x)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)
+66  :     1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*z - 1/8*(z*(sqrt(5) + 1) + 2*w + 2*y)*(z*(sqrt(5) + 1) + 2*x + 2*y)*(y*(sqrt(5) - 1) - 2*w - 2*x)
+67  :     1/8*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/4*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) - 2*x - 2*y)*(w + x + y)
+68  :     1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) - 2*x - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(w + x)
+69  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y)*(w + z) + (w + x + y + z)*(w + y + z)*(y + z)
+70  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z)*(w + y + z) + (w + y)*(w + z)*x
+71  :     1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + x + y + z) - 1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)
+72  :     1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z) - 1/8*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*y)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)
+73  :     1/8*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/4*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*x
+74  :     1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/4*(y*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*w + 2*x)*(w*(sqrt(5) + 1) + 2*y + 2*z)*(y + z)
+75  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + z)*z + (w + y + z)*w*(x + y)
+76  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z)*(x + y) + (w + x + z)*(w + z)*z
+77  :     1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + y) - 1/8*(w*(sqrt(5) + 3) + z*(sqrt(5) + 3) + 2*x + 2*y)*(w*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)
+78  :     -1/4*(w*(sqrt(5) - 1) - 2*x - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z) - 1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(w*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*w + 2*y)
+79  :     -1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(w + x + z)
+80  :     -1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*y)*w
+81  :     1/4*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + y + z) - 1/4*(w*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(x + z)
+82  :     -1/4*(z*(sqrt(5) - 1) - 2*x - 2*y)^2*K*(x + z) - 1/4*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(x + y + z)
+83  :     -1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + z) + 1/4*(y*(sqrt(5) - 1) - 2*w - 2*x)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*y
+84  :     1/8*(w*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)^2*K - 1/8*(y*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) + 1) + 2*x + 2*y)*(y*(sqrt(5) - 1) - 2*w - 2*x)
+85  :     1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(w*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/8*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)
+86  :     1/8*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(w*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*z)
+87  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y)*(x + y + z) + (w + x + z)*(x + z)*z
+88  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + z)*z + (w + y)*(x + y + z)*x
+89  :     1/4*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + z) + 1/8*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(y*(sqrt(5) - 1) - 2*x - 2*z)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)
+90  :     -1/4*(w*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*z - 1/8*(z*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*y)
+91  :     -1/8*(z*(sqrt(5) + 1) + 2*w + 2*x)*(w*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/4*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*x
+92  :     -1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/4*(z*(sqrt(5) + 1) + 2*w + 2*x)*(w*(sqrt(5) - 1) - 2*x - 2*z)*(w + x + z)
+93  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y)*y + (w + y + z)*w*(x + z)
+94  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z)*(x + z) + (w + x + y)*(w + y)*y
+95  :     1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + z) - 1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(w*(sqrt(5) + 1) + 2*x + 2*y)*(y*(sqrt(5) - 1) - 2*x - 2*z)
+96  :     -1/4*(w*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z) - 1/8*(w*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(z*(sqrt(5) - 1) - 2*w - 2*y)
+97  :     -1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/4*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) + 1) + 2*w + 2*x)*(w + x + y)
+98  :     -1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K - 1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(w*(sqrt(5) - 1) - 2*x - 2*z)*w
+99  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*y*z + (w + y + z)*(x + y + z)*(y + z)
+100  :     1/2*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z)*(x + y + z) + (w + x)*y*z
+101  :     1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(x + y + z) - 1/8*(y*(sqrt(5) - 1) - 2*x - 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)
+102  :     1/4*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z) - 1/8*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(z*(sqrt(5) - 1) - 2*w - 2*y)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)
+103  :     1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/4*(y*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(w + x)
+104  :     1/8*(y*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/4*(w*(sqrt(5) + 1) + 2*y + 2*z)*(y*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(y + z)
+105  :     1/4*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*z - 1/4*(z*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) - 2*y - 2*z)*(w + y + z)
+106  :     1/4*(z*(sqrt(5) + 1) + 2*x + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K*(w + y + z) - 1/4*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*y)*(z*(sqrt(5) - 1) - 2*w - 2*x)*z
+107  :     1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) + 1) + 2*x + 2*y)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/8*(w*(sqrt(5) + 1) + y*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)
+108  :     -1/4*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*K*(w + y + z) - 1/4*(w*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*y)*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(w + y)
+109  :     -1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(z*(sqrt(5) - 1) - 2*x - 2*y)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)*K - 1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*x)
+110  :     1/8*(w*(sqrt(5) + 3) + y*(sqrt(5) + 3) + 2*x + 2*z)*(z*(sqrt(5) + 1) + 2*w + 2*x)*(z*(sqrt(5) - 1) - 2*x - 2*y)*K + 1/8*(w*(sqrt(5) + 1) + 2*y + 2*z)*(w*(sqrt(5) - 1) - 2*y - 2*z)*(w*(sqrt(5) - 3) + y*(sqrt(5) - 3) - 2*x - 2*z)
+111  :     -1/4*(z*(sqrt(5) - 1) - 2*w - 2*x)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)*K*(w + x + y) + 1/4*(w*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(w + x)
+112  :     -1/4*(w*(sqrt(5) - 1) - 2*y - 2*z)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)*K*x + 1/4*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(y + z)
+113  :     -1/4*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) - 2*y - 2*z)*K*(w + x) + 1/4*(y*(sqrt(5) - 1) - 2*w - 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*x)*(y + z)
+114  :     1/4*(w*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) - 1) - 2*y - 2*z)*K*(w + x + z) - 1/4*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*(z*(sqrt(5) - 1) - 2*w - 2*x)*w
+115  :     1/4*(w*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) - 2*y - 2*z)*K*(w + x + y) - 1/4*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(y*(sqrt(5) - 1) - 2*w - 2*x)*w
+116  :     1/4*(w*(sqrt(5) + 1) + 2*x + 2*z)*(z*(sqrt(5) - 1) - 2*w - 2*x)*K*x - 1/4*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) + y*(sqrt(5) - 1) + 2*x)*(w + x + z)
+117  :     -K*(w + x + y)*(w + x + z)*(y + z) + (w + x)*w*x
+118  :     -1/4*(w*(sqrt(5) + 1) + 2*x + 2*y)*(w*(sqrt(5) + 1) + 2*x + 2*z)*K*(y + z) + 1/4*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)*w
+119  :     -1/4*(w*(sqrt(5) + 1) + 2*x + 2*z)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*K*(w + x) + 1/4*(y*(sqrt(5) - 1) - 2*w - 2*x)*(y*(sqrt(5) - 3) + z*(sqrt(5) - 3) - 2*w - 2*x)*(w + x + z)
+120  :     1/4*(y*(sqrt(5) + 1) + z*(sqrt(5) + 1) - 2*x)*(w*(sqrt(5) - 1) + z*(sqrt(5) - 1) + 2*x)*K*(w + x + y) - 1/4*(w*(sqrt(5) + 1) + 2*x + 2*y)*(y*(sqrt(5) - 1) - 2*w - 2*x)*x
+}}}
+
+{{{id=7|
+
+///
+}}}
+
+{{{id=8|
+
+///
+}}}
+
+{{{id=9|
+
+///
+0
+}}}
+
+{{{id=10|
+
+///
+}}}
