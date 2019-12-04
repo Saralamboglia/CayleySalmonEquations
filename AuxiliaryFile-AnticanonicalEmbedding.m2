@@ -1,4 +1,4 @@
---This file containd auxiliary materials to compute Steiner forms for a cubic surface
+--This file containd auxiliary materials to compute Cayley-Salmon equations for a cubic surface
 
 
 --These are the linear forms(trinomials after factorizing the coefficients) in the ideal  of Theorem 3.5 in  "Anticanonical tropical cubic del Pezzo contain exactly 27 lines"
