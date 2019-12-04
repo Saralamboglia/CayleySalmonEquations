@@ -1,4 +1,4 @@
---This is the file with all code to compute the 120 Steiner representations as in Proposition 4.1 of "A short note on Cayley-Salmon equations"
+--This is the file with all code to compute the 120 Cayley-Salmon equations as in Proposition 4.1 of "A short note on Cayley-Salmon equations"
 
 S=frac(QQ[d1,d2,d3,d4,d5,d6])[X12, X13,X14, X15, X16,X21, X23,X24, X25, X26,X31, X32, X34, X35,X36,X41,Y142356,X42, Y132456,X43,Y123456, X45,X65,X46,X56, X51,Y152346, X52, Y132546, X53, Y123546, X54, X64, X61, Y162345, X62,Y132645, X63, Y123645, Y142536, Y142635, Y152436, Y152634, Y162435,Y162534]
 
